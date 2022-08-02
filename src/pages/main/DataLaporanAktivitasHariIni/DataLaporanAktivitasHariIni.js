@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import NavBar from "../../../components/NavBar/NavBar";
 import axiosApiIntances from "../../../utils/axios";
-import { Button, Container, Form, Modal, Table } from "react-bootstrap";
+import { Button, Container, Form, Modal, Table, Row, Col } from "react-bootstrap";
 import styles from "./DataLaporanAktivitasHariIni.module.css";
 import { connect } from "react-redux";
 import Footer from "../../../components/Footer/Footer";
 
 import { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, getAllLaporanToday } from "../../../redux/action/laporanAktivitas"
 import moment from "moment";
+import * as XLSX from 'xlsx'
 class Home extends Component {
   constructor(props) {
 
@@ -164,6 +165,14 @@ class Home extends Component {
       });
   };
 
+  handleExport = () => {
+
+    var wb = XLSX.utils.book_new(),
+      ws = XLSX.utils.json_to_sheet(this.props.dataLaporanToday);
+    XLSX.utils.book_append_sheet(wb, ws, "MySheet1");
+    XLSX.writeFile(wb, "MyExcel.xlsx")
+  }
+
   // getDataMovieUpcoming = (id) => {
   //   axiosApiIntances
   //     .get(`laporanaktivitas/${id}`)
@@ -195,6 +204,15 @@ class Home extends Component {
         <Container className="mt-5" fluid>
           <h1>Data Laporan Hari Ini ({moment().format("DD-MMM-YYYY")})</h1>
           {/* <Button>Input data Aktivitas</Button> */}
+          {this.props.datadiri.user_role === "admin" ?
+            <Row>
+              <Col md={10}>
+                <Button
+                  onClick={() => this.handleExport()}>
+                  Export Data</Button>
+              </Col>
+            </Row>
+            : ""}
           < div className="mt-5" >
             <Table striped bordered hover>
               <thead>
@@ -224,7 +242,7 @@ class Home extends Component {
                         {item.user_pangkat}
                       </td>
                       <td>
-                        {item.logaktivitas_isi === null ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : item.logaktivitas_isi}
+                        {item.logaktivitas_isi === "Belum mengisi data hari ini" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
                       </td>
                     </tr>
                   </tbody>
@@ -328,6 +346,7 @@ const mapDispatchToProps = { getAllLaporanAktivitas, getByIdLaporanAktivitas, up
 
 const mapStateToProps = (state) => ({
   hehe: state,
+  datadiri: state.auth.data,
   dataLaporanAktivitasById: state.laporanAktivitas.dataLaporanById,
   dataLaporanAktivitasAll: state.laporanAktivitas.dataLaporanAll,
   dataLaporanToday: state.laporanAktivitas.dataLaporanToday
