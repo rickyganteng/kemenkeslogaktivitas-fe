@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Mulish&display=swap");
+
+.category {
+  font-family: "Mulish", sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.4px;
+  color: #a0a3bd;
+}
+
+.title {
+  font-family: "Mulish", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0.15px;
+}
+
+.btUpdate {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 4px;
+  border: solid #5f2eea;
+  border-radius: 10px;
+  color: #5f2eea;
+  height: 34px;
+  width: 100%;
+}
+.btFasilitas {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 4px;
+  border: solid #7c7c7c;
+  border-radius: 10px;
+  color: #7c7c7c;
+  height: 34px;
+  width: 100%;
+}
+
+.btBooking {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 4px;
+  border: solid #a0a3bd;
+  border-radius: 10px;
+  color: #a0a3bd;
+  height: 34px;
+  width: 100%;
+}
+
+.btDelete {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 18px;
+  margin-top: 4px;
+  border: solid #ed2e7e;
+  border-radius: 10px;
+  color: #ed2e7e;
+  height: 34px;
+  width: 100%;
+}
+
+.btUpdate:hover {
+  background-color: #5f2eea;
+  border: solid #5f2eea;
+}
+
+.btBooking:hover {
+  background-color: #a0a3bd;
+  border: solid #a0a3bd;
+}
+
+.btDelete:hover {
+  background-color: #ed2e7e;
+  border: solid #ed2e7e;
+}
+
+.imgCard {
+  width: 100%;
+  border-radius: 5px;
+  height: 275px;
+}

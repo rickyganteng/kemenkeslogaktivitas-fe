@@ -1,0 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Mulish&display=swap");
+
+.semi {
+  font-family: "Mulish", sans-serif;
+  font-size: 16px;
+  color: #6e7191;
+}
+.copyright {
+  font-family: "Mulish", sans-serif;
+  font-size: 10px;
+  color: #6e7191;
+}
+.semi11 {
+  font-family: "Mulish", sans-serif;
+  font-size: 11px;
+  color: #6e7191;
+}
+
+.margin{
+  margin-left: 32px;
+}
+
+.align{
+  text-align: right;
+}
+
+.bold {
+  font-family: "Mulish", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+}

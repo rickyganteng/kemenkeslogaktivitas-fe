@@ -1,0 +1,87 @@
+@import url("https://fonts.googleapis.com/css2?family=Mulish&display=swap");
+
+.title {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0.75px;
+}
+
+.subTitle {
+  font-family: "Mulish", sans-serif;
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.75px;
+  color: #6e7191;
+}
+
+.clock {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600px;
+  font-size: 12px;
+  line-height: 23px;
+  letter-spacing: 0.75px;
+  color: #6e7191;
+  margin-left: 18px;
+  margin-bottom: 15px;
+}
+
+.clockSelected {
+  font-family: "Mulish", sans-serif;
+  font-weight: bold;
+  font-size: 12px;
+  line-height: 23px;
+  letter-spacing: 0.75px;
+  color: black;
+  margin-left: 18px;
+  margin-bottom: 15px;
+}
+
+.clockSelected:hover {
+  cursor: pointer;
+}
+
+.clock:hover {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.price {
+  font-family: "Mulish", sans-serif;
+  font-size: 16px;
+  line-height: 32px;
+  letter-spacing: 0.75px;
+  color: #6b6b6b;
+}
+
+.priceValue {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 32px;
+  letter-spacing: 0.75px;
+}
+
+.btBook {
+  width: 100%;
+  font-family: "Mulish", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 24px;
+  letter-spacing: 0.75px;
+  /* color: #f7f7fc; */
+  /* background-color: rgba(95, 46, 234, 1); */
+  border-radius: 10px;
+  margin-top: 4px;
+}
+
+.btBook:hover {
+  background-color: rgba(95, 46, 234, 1);
+}
+
+.modal {
+  font-family: "Mulish", sans-serif !important;
+  margin: auto;
+}

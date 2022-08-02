@@ -1,0 +1,30 @@
+.seat {
+  width: 20px;
+  height: 20px;
+  border-radius: 25%;
+}
+
+.rowSeat {
+  flex-wrap: nowrap;
+}
+
+.colSeat {
+  padding: 0 0px;
+}
+
+.colSeat:hover {
+  cursor: pointer;
+  border: black;
+}
+
+.seatAvailabel {
+  background-color: #d6d8e7;
+}
+
+.seatSelected {
+  background-color: blue;
+}
+
+.seatSold {
+  background-color: black;
+}
