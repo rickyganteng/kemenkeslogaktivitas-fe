@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import NavBar from "../../../components/NavBar/NavBar";
 import axiosApiIntances from "../../../utils/axios";
-import { Button, Container, Form, Modal, Table, Row, Col } from "react-bootstrap";
+import { Button, Container, Form, Modal, Table, Row, Col, Dropdown, DropdownButton } from "react-bootstrap";
 import styles from "./DataLaporanAktivitasHariIni.module.css";
 import { connect } from "react-redux";
 import Footer from "../../../components/Footer/Footer";
+import ReactPaginate from "react-paginate";
 
 import { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, getAllLaporanToday } from "../../../redux/action/laporanAktivitas"
 import moment from "moment";
@@ -17,6 +18,12 @@ class Home extends Component {
       modalHandleEdit: false,
       showNotif: false,
       modalMsg: "",
+      dropDownVal: "Sort By",
+      page: 1,
+      limit: 10,
+      sortCol: "",
+      sortBy: "",
+      search: "",
       form: {
         isiAktivitas: ""
       }
@@ -29,27 +36,30 @@ class Home extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.search !== this.state.search ||
+      prevState.sortCol !== this.state.sortCol ||
       prevState.sortBy !== this.state.sortBy
     ) {
       this.setState({ page: 1 }, () => {
-        this.getData1()
+        this.getData()
       });
     }
 
     if (
       prevState.search !== this.state.search ||
       prevState.sortBy !== this.state.sortBy ||
+      prevState.sortCol !== this.state.sortCol ||
       prevState.page !== this.state.page
     ) {
       this.props.history.push(
-        `/bookingruangrapat?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}`
+        `/laporanaktivitashariini?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
       );
     }
   }
 
   getData = () => {
-    this.props.getAllLaporanAktivitas();
-    this.props.getAllLaporanToday();
+    const { page, limit, sortBy, sortCol, search } = this.state
+    // this.props.getAllLaporanAktivitas();
+    this.props.getAllLaporanToday(page, limit, sortBy, sortCol, search,);
   };
 
   handleEdit = (params) => {
@@ -173,6 +183,36 @@ class Home extends Component {
     XLSX.writeFile(wb, "MyExcel.xlsx")
   }
 
+  handleSelect = (event) => {
+    console.log(event.split("-")[1]);
+    console.log(event.split("-")[2]);
+    this.setState({
+      dropDownVal: event.split("-")[0],
+      sortBy: event.split("-")[2],
+      sortCol: event.split("-")[1],
+      search: "",
+      FromDate: "",
+      ToDate: ""
+    });
+  };
+
+  changeText = (event) => {
+    console.log('target naem', event.target.name);
+    console.log('target naem', event.target.value);
+    if (event.target.name === 'search') {
+      this.setState({ [event.target.name]: "%" + event.target.value + "%" });
+    } else {
+      this.setState({ [event.target.name]: event.target.value });
+    }
+  };
+
+  handlePageClick2 = (event) => {
+    console.log(event.selected);
+    const selectedPage = event.selected + 1;
+    this.setState({ page: selectedPage }, () => {
+      this.getData();
+    });
+  };
   // getDataMovieUpcoming = (id) => {
   //   axiosApiIntances
   //     .get(`laporanaktivitas/${id}`)
@@ -189,20 +229,60 @@ class Home extends Component {
 
   render() {
 
-    const { modalHandleEdit, showNotif, modalMsg } = this.state
+    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, } = this.state
     let { isiAktivitas } = this.state.form
     console.log(this.props.dataLaporanAktivitasById);
+    const { paginationLaporanToday } = this.props.hehe.laporanAktivitas
     // // isiAktivitas = this.props.dataLaporanAktivitasById[0].logaktivitas_isi
     // console.log(isiAktivitas);
 
-    console.log(this.props.dataLaporanToday);
+    console.log(this.props.hehe.laporanAktivitas.paginationLaporanToday);
 
     return (
       <>
 
         <NavBar isAdminPage={false} />
         <Container className="mt-5" fluid>
-          <h1>Data Laporan Hari Ini ({moment().format("DD-MMM-YYYY")})</h1>
+          <Row>
+            <Col>
+              <h1>Data Laporan Hari Ini ({moment().format("DD-MMM-YYYY")})</h1>
+            </Col>
+            <Col lg={2}>
+              <DropdownButton
+                className={`${styles.dropDown} mb-2 text-right`}
+                variant="secondary"
+                title={dropDownVal}
+                id="dropdown-menu-align-right"
+                onSelect={this.handleSelect}
+              >
+                <Dropdown.Item
+                  className={styles.semi}
+                  eventKey="Nama Lengkap-user_name-user_name DESC"
+                >
+                  Nama Lengkap
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={styles.semi}
+                  eventKey="NIP-user_nip-user_name DESC"
+                >
+                  NIP
+                </Dropdown.Item>
+              </DropdownButton>
+            </Col>
+
+            <Col lg={3}>
+              <Form className={styles.searchInput}>
+                <Form.Group>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search ..."
+                    name="search"
+                    onChange={(event) => this.changeText(event)}
+                  />
+                </Form.Group>
+              </Form>
+            </Col>
+          </Row>
           {/* <Button>Input data Aktivitas</Button> */}
           {this.props.datadiri.user_role === "admin" ?
             <Row>
@@ -251,15 +331,14 @@ class Home extends Component {
             </Table>
           </div>
         </Container>
-        <Footer />
-        {/* <Container >
+        <Container >
           <div className="d-flex justify-content-center">
             <ReactPaginate
               previousLabel={"prev"}
               nextLabel={"next"}
               breakLabel={"..."}
               breakClassName={"break-me"}
-              pageCount={paginationn.totalPage ? paginationn.totalPage : 0}
+              pageCount={paginationLaporanToday.totalPage ? paginationLaporanToday.totalPage : 0}
               marginPagesDisplayed={2}
               pageRangeDisplayed={2}
               onPageChange={this.handlePageClick2}
@@ -268,7 +347,9 @@ class Home extends Component {
               activeClassName={styles.active}
             />
           </div>
-        </Container> */}
+        </Container>
+        <Footer />
+
 
         {/* modal input aktivitas */}
         <Modal size="lg" show={modalHandleEdit} onHide={this.handleClose}>

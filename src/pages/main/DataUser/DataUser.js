@@ -1,9 +1,11 @@
 import React, { Component } from "react";
 import NavBar from "../../../components/NavBar/NavBar";
 import axiosApiIntances from "../../../utils/axios";
-import { Button, Container, Row, Col, Form, Modal, Table } from "react-bootstrap";
+import ReactPaginate from "react-paginate";
+import { Button, Container, Row, Col, Form, Modal, Table, Dropdown, DropdownButton } from "react-bootstrap";
 import { connect } from "react-redux";
 import Footer from "../../../components/Footer/Footer";
+import styles from "./DataUser.module.css"
 
 
 import { getUserAllTanpaFill, getByIdUser, updateDataUserLaporan, deleteUser } from "../../../redux/action/user"
@@ -15,7 +17,15 @@ class Home extends Component {
     this.state = {
       showEditUser: false,
       showNotif: false,
+      showVerifDelete: false,
       modalMsg: "",
+      dropDownVal: "Sort By",
+      page: 1,
+      limit: 10,
+      sortCol: "",
+      sortBy: "user_name ASC",
+      search: "",
+      idDelete: "",
       form: {
         userNama: "",
         userNIP: "",
@@ -33,26 +43,30 @@ class Home extends Component {
     this.getData()
   }
   getData = () => {
-    this.props.getUserAllTanpaFill();
+    const { page, limit, sortBy, sortCol, search } = this.state
+    this.props.getUserAllTanpaFill(page, limit, sortBy, sortCol, search);
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.search !== this.state.search ||
-      prevState.sortBy !== this.state.sortBy
+      prevState.sortBy !== this.state.sortBy ||
+      prevState.sortCol !== this.state.sortCol
     ) {
       this.setState({ page: 1 }, () => {
-
+        this.getData()
       });
     }
 
     if (
       prevState.search !== this.state.search ||
       prevState.sortBy !== this.state.sortBy ||
-      prevState.page !== this.state.page
+      prevState.page !== this.state.page ||
+      prevState.sortCol !== this.state.sortCol
+
     ) {
       this.props.history.push(
-        `/bookingruangrapat?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}`
+        `/datauser?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
       );
     }
   }
@@ -165,7 +179,10 @@ class Home extends Component {
       })
       .finally(() => {
         setTimeout(() => {
-          this.setState({ showNotif: false });
+          this.setState({
+            showNotif: false,
+            showVerifDelete: false,
+          });
         }, 1000);
       });
   };
@@ -174,6 +191,52 @@ class Home extends Component {
     this.setState({
       showNotif: false
     })
+  };
+
+  handleOpenVierifDelete = (id) => {
+    console.log('id delete', id);
+    this.setState({
+      showVerifDelete: true,
+      idDelete: id
+    })
+  };
+  handleCloseVierifDelete = () => {
+    this.setState({
+      showVerifDelete: false,
+      idDelete: ""
+    })
+  };
+
+  handleSelect = (event) => {
+    console.log(event.split("-")[1]);
+    console.log(event.split("-")[2]);
+    this.setState({
+      dropDownVal: event.split("-")[0],
+      sortBy: event.split("-")[2],
+      sortCol: event.split("-")[1],
+      search: "",
+    });
+    this.setState({ page: 1 }, () => {
+      this.getData();
+    });
+  };
+
+  changeText = (event) => {
+    console.log('target naem', event.target.name);
+    console.log('target naem', event.target.value);
+    if (event.target.name === 'search') {
+      this.setState({ [event.target.name]: "%" + event.target.value + "%" });
+    } else {
+      this.setState({ [event.target.name]: event.target.value });
+    }
+  };
+
+  handlePageClick = (event) => {
+    console.log(event.selected);
+    const selectedPage = event.selected + 1;
+    this.setState({ page: selectedPage }, () => {
+      this.getData();
+    });
   };
   // handleEdit = () => {
   //   console.log('params');
@@ -204,8 +267,9 @@ class Home extends Component {
 
   render() {
 
-    // console.log(this.props.DataUserAll);
-    const { showEditUser, showNotif, modalMsg } = this.state
+    console.log(this.props.pagination.pagination);
+    const { pagination } = this.props.pagination
+    const { showEditUser, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete } = this.state
     const {
       userNama,
       userNIP,
@@ -216,12 +280,52 @@ class Home extends Component {
       userPasswordRegis,
       idUser
     } = this.state.form
+    console.log('id dele', idDelete);
     return (
       <>
 
         <NavBar isAdminPage={false} />
         <Container className="mt-5" fluid>
-          <h1>Data User</h1>
+          <Row>
+            <Col>
+              <h1>Data User</h1>
+            </Col>
+            <Col lg={2}>
+              <DropdownButton
+                className={`${styles.dropDown} mb-2 text-right`}
+                variant="secondary"
+                title={dropDownVal}
+                id="dropdown-menu-align-right"
+                onSelect={this.handleSelect}
+              >
+                <Dropdown.Item
+                  className={styles.semi}
+                  eventKey="Nama Lengkap-user_name-user_name ASC"
+                >
+                  Nama Lengkap
+                </Dropdown.Item>
+                <Dropdown.Item
+                  className={styles.semi}
+                  eventKey="NIP-user_nip-user_name ASC"
+                >
+                  NIP
+                </Dropdown.Item>
+              </DropdownButton>
+            </Col>
+
+            <Col lg={3}>
+              <Form className={styles.searchInput}>
+                <Form.Group>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search ..."
+                    name="search"
+                    onChange={(event) => this.changeText(event)}
+                  />
+                </Form.Group>
+              </Form>
+            </Col>
+          </Row>
           <div className="mt-5">
             <Table striped bordered hover>
               <thead>
@@ -269,7 +373,9 @@ class Home extends Component {
                           <Col>
                             <Button
                               variant="danger"
-                              onClick={() => this.deletedUser(item.id)}>
+                              // onClick={() => this.deletedUser(item.id)}
+                              onClick={() => this.handleOpenVierifDelete(item.id)}
+                            >
                               Hapus
                             </Button>
                           </Col>
@@ -283,26 +389,27 @@ class Home extends Component {
             </Table>
           </div>
         </Container>
-        <Footer />
 
 
-        {/* <Container >
+        <Container >
           <div className="d-flex justify-content-center">
             <ReactPaginate
               previousLabel={"prev"}
               nextLabel={"next"}
               breakLabel={"..."}
               breakClassName={"break-me"}
-              pageCount={paginationn.totalPage ? paginationn.totalPage : 0}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={2}
-              onPageChange={this.handlePageClick2}
+              pageCount={pagination.totalPage ? pagination.totalPage : 0}
+              marginPagesDisplayed={5}
+              pageRangeDisplayed={5}
+              onPageChange={this.handlePageClick}
               containerClassName={styles.pagination}
               subContainerClassName={`${styles.pages} ${styles.pagination}`}
               activeClassName={styles.active}
             />
           </div>
-        </Container> */}
+        </Container>
+        <Footer />
+
         {/* modal register */}
         <Modal size="lg" show={showEditUser} onHide={this.handleClose}>
           <Modal.Header closeButton>
@@ -411,6 +518,28 @@ class Home extends Component {
           </Modal.Body>
         </Modal>
         {/* akhir modal notif */}
+
+        {/* modal Verif delete */}
+        <Modal size="sm" show={showVerifDelete} onHide={this.handleCloseVierifDelete} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Yakin dihapus ?</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <Button
+                  onClick={() => this.deletedUser(idDelete)}
+                >Yakin</Button>
+              </Col>
+              <Col>
+                <Button
+                  onClick={() => this.handleCloseVierifDelete()}
+                >Tidak</Button>
+              </Col>
+            </Row>
+          </Modal.Body>
+        </Modal>
+        {/* akhir modal Verif delete */}
       </>
     );
   }
@@ -418,6 +547,7 @@ class Home extends Component {
 const mapDispatchToProps = { getUserAllTanpaFill, getByIdUser, updateDataUserLaporan, deleteUser };
 
 const mapStateToProps = (state) => ({
+  pagination: state.user,
   DataUserAll: state.user.dataUser
 });
 

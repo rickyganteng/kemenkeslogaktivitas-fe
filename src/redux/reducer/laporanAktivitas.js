@@ -3,6 +3,8 @@ const initialState = {
   isError: false,
   msg: "",
   pagination: {},
+  paginationLaporanToday: {},
+  paginationByUserId: {},
   dataLaporanAll: [],
   dataLaporanToday: [],
   dataLaporanById: [],
@@ -72,6 +74,7 @@ const update = (state = initialState, action) => {
         isError: false,
         msg: action.payload.data.msg,
         dataLaporanByIdUser: action.payload.data.data,
+        paginationByUserId: action.payload.data.pagination
         // pag: action.payload.data.pagination
       };
     case "GET_LAPORAN_AKTIVITAS_BY_ID_USER_REJECTED":
@@ -80,7 +83,8 @@ const update = (state = initialState, action) => {
         isLoading: false,
         isError: true,
         msg: action.payload.message,
-        dataLaporanByIdUser: []
+        dataLaporanByIdUser: [],
+        paginationByUserId: {}
       };
     case "GET_ALL_LAPORAN_TODAY_PENDING":
       return {
@@ -95,6 +99,8 @@ const update = (state = initialState, action) => {
         isError: false,
         msg: action.payload.data.msg,
         dataLaporanToday: action.payload.data.data,
+        paginationLaporanToday: action.payload.data.pagination
+
         // pag: action.payload.data.pagination
       };
     case "GET_ALL_LAPORAN_TODAY_REJECTED":
@@ -103,7 +109,8 @@ const update = (state = initialState, action) => {
         isLoading: false,
         isError: true,
         msg: action.payload.message,
-        dataLaporanToday: []
+        dataLaporanToday: [],
+        paginationLaporanToday: {}
       };
     case "POST_LAPORAN_AKTIVITAS_PENDING":
       return {

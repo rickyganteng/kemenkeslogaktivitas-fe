@@ -10,7 +10,6 @@ import { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas
 import moment from "moment";
 import * as XLSX from 'xlsx'
 import Footer from "../../../components/Footer/Footer";
-
 class Home extends Component {
   constructor(props) {
 
@@ -18,15 +17,21 @@ class Home extends Component {
     this.state = {
       modalHandleEdit: false,
       showNotif: false,
+      showVerifDelete: false,
+      idDelete: "",
       modalMsg: "",
       dropDownVal: "Sort By",
       page: 1,
       limit: 10,
       sortCol: "",
-      sortBy: "",
+      sortBy: "logaktivitas_created_at DESC",
       search: "",
+      FromDate: "",
+      ToDate: "",
       form: {
-        isiAktivitas: ""
+        isiAktivitas: "",
+        movieImage: null,
+        image: null,
       }
     };
   }
@@ -37,6 +42,8 @@ class Home extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.search !== this.state.search ||
+      prevState.FromDate !== this.state.FromDate ||
+      prevState.ToDate !== this.state.ToDate ||
       prevState.sortBy !== this.state.sortBy ||
       prevState.sortCol !== this.state.sortCol
     ) {
@@ -47,20 +54,27 @@ class Home extends Component {
 
     if (
       prevState.search !== this.state.search ||
+      prevState.FromDate !== this.state.FromDate ||
+      prevState.ToDate !== this.state.ToDate ||
       prevState.sortBy !== this.state.sortBy ||
       prevState.sortCol !== this.state.sortCol ||
       prevState.page !== this.state.page
     ) {
-      this.props.history.push(
-        `/laporanaktivitas?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
-      );
+      this.state.dropDownVal === "tanggal" ?
+        this.props.history.push(
+          `/laporanaktivitas?fromdate=${this.state.FromDate}&todate=${this.state.ToDate}`
+        ) :
+        this.props.history.push(
+          `/laporanaktivitas?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
+        )
     }
   }
 
   getData = () => {
-    const { page, limit, sortBy, sortCol, search } = this.state
-    this.props.getLaporanAktivitasByIdUser(this.props.datadiri.id);
-    this.props.getAllLaporanAktivitas(page, limit, sortBy, sortCol, search);
+    const { page, limit, sortBy, sortCol, search, FromDate, ToDate } = this.state
+    console.log('id datadiri', this.props.datadiri.id);
+    this.props.getLaporanAktivitasByIdUser(page, limit, this.props.datadiri.id);
+    this.props.getAllLaporanAktivitas(page, limit, sortBy, sortCol, search, FromDate, ToDate);
   };
 
   handleEdit = (params) => {
@@ -102,7 +116,13 @@ class Home extends Component {
   };
 
   changeText = (event) => {
-    this.setState({ [event.target.name]: "%" + event.target.value + "%" });
+    console.log('target naem', event.target.name);
+    console.log('target naem', event.target.value);
+    if (event.target.name === 'search') {
+      this.setState({ [event.target.name]: "%" + event.target.value + "%" });
+    } else {
+      this.setState({ [event.target.name]: event.target.value });
+    }
   };
 
   updateData = (id) => {
@@ -159,7 +179,7 @@ class Home extends Component {
       .then((res) => {
         this.setState(
           {
-            modalMsg: "Booking Ruangan Deleted !",
+            modalMsg: "Data Laporan Aktivitas Deleted !",
             showNotif: true,
           },
           () => {
@@ -175,18 +195,25 @@ class Home extends Component {
       })
       .finally(() => {
         setTimeout(() => {
-          this.setState({ show: false });
+          this.setState({
+            show: false,
+            showNotif: false,
+            showVerifDelete: false
+          });
         }, 1000);
       });
   };
 
   handleSelect = (event) => {
-    console.log(event);
+    console.log(event.split("-")[1]);
+    console.log(event.split("-")[2]);
     this.setState({
       dropDownVal: event.split("-")[0],
-      sortBy: event.split("-")[1],
-      sortCol: event.split("-")[1].split(" ")[0],
-      search: ""
+      sortBy: event.split("-")[2],
+      sortCol: event.split("-")[1],
+      search: "",
+      FromDate: "",
+      ToDate: ""
     });
   };
 
@@ -197,6 +224,50 @@ class Home extends Component {
     XLSX.utils.book_append_sheet(wb, ws, "MySheet1");
     XLSX.writeFile(wb, "MyExcel.xlsx")
   }
+
+  handlePageClick2 = (event) => {
+    console.log(event.selected);
+    const selectedPage = event.selected + 1;
+    this.setState({ page: selectedPage }, () => {
+      this.getData();
+    });
+  };
+
+  handleOpenVierifDelete = (id) => {
+    console.log('id delete', id);
+    this.setState({
+      showVerifDelete: true,
+      idDelete: id
+    })
+  };
+
+  handleCloseVierifDelete = () => {
+    this.setState({
+      showVerifDelete: false,
+      idDelete: ""
+    })
+  };
+
+  handleImage = (event) => {
+    console.log(event.target.files);
+    if (event.target.files[0]) {
+      this.setState({
+        form: {
+          ...this.state.form,
+          movieImage: URL.createObjectURL(event.target.files[0]),
+          image: event.target.files[0],
+        },
+      });
+    } else {
+      this.setState({
+        form: {
+          ...this.state.form,
+          movieImage: null,
+          image: null,
+        },
+      });
+    }
+  };
   // getDataMovieUpcoming = (id) => {
   //   axiosApiIntances
   //     .get(`laporanaktivitas/${id}`)
@@ -213,65 +284,105 @@ class Home extends Component {
 
   render() {
 
-    const { modalHandleEdit, showNotif, modalMsg, dropDownVal } = this.state
+    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete } = this.state
     let { isiAktivitas } = this.state.form
-    console.log(this.props.dataLaporanAktivitasById);
-    console.log(this.state.sortBy);
-    console.log(this.state.sortCol);
     const { pagination } = this.props.hehe.laporanAktivitas
+    const { paginationByUserId } = this.props.hehe.laporanAktivitas
+    console.log(paginationByUserId);
+    console.log(pagination);
+    console.log(this.props.dataLaporanAktivitasAlltest);
 
     // // isiAktivitas = this.props.dataLaporanAktivitasById[0].logaktivitas_isi
     // console.log(isiAktivitas);
 
-    console.log(this.props);
-    console.log(this.props.datadiri);
-    console.log(localStorage.getItem("user"));
 
     return (
       <>
 
         <NavBar isAdminPage={false} />
         <Container className="mt-5" fluid>
-          <Row>
-            <Col>
+          {this.props.datadiri.user_role === "admin" ?
+            <div>
+              <Row>
+                <Col>
+                  <h1>Data Laporan</h1>
+
+                </Col>
+                <Col lg={2}>
+                  <DropdownButton
+                    className={`${styles.dropDown} mb-2 text-right`}
+                    variant="secondary"
+                    title={dropDownVal}
+                    id="dropdown-menu-align-right"
+                    onSelect={this.handleSelect}
+                  >
+                    <Dropdown.Item
+                      className={styles.semi}
+                      eventKey="Nama Lengkap-user_name-logaktivitas_created_at DESC"
+                    >
+                      Nama Lengkap
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className={styles.semi}
+                      eventKey="NIP-user_nip-logaktivitas_created_at DESC"
+                    >
+                      NIP
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className={styles.semi}
+                      eventKey="tanggal-user_name-logaktivitas_created_at DESC"
+                    >
+                      Tanggal
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </Col>
+                {dropDownVal === "tanggal" ?
+                  <div className="d-flex justify-content-around">
+                    <Row>
+                      <Col md={6} >
+                        <Form className={styles.searchInput}>
+                          <Form.Group>
+                            <Form.Control
+                              type="date"
+                              placeholder="Search ..."
+                              name="FromDate"
+                              onChange={(event) => this.changeText(event)}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Col>
+                      <Col md={6} >
+                        <Form className={styles.searchInput}>
+                          <Form.Group>
+                            <Form.Control
+                              type="date"
+                              placeholder="Search ..."
+                              name="ToDate"
+                              onChange={(event) => this.changeText(event)}
+                            />
+                          </Form.Group>
+                        </Form>
+                      </Col>
+                    </Row>
+                  </div> :
+                  <Col lg={3}>
+                    <Form className={styles.searchInput}>
+                      <Form.Group>
+                        <Form.Control
+                          type="text"
+                          placeholder="Search ..."
+                          name="search"
+                          onChange={(event) => this.changeText(event)}
+                        />
+                      </Form.Group>
+                    </Form>
+                  </Col>}
+              </Row>
+            </div>
+            : <Col>
               <h1>Data Laporan</h1>
 
-            </Col>
-            <Col lg={3}>
-              <DropdownButton
-                className={`${styles.dropDown} mb-2 text-right`}
-                variant="secondary"
-                title={dropDownVal}
-                id="dropdown-menu-align-right"
-                onSelect={this.handleSelect}
-              >
-                <Dropdown.Item
-                  className={styles.semi}
-                  eventKey="Nama Lengkap-user_name ASC"
-                >
-                  Nama Lengkap
-                </Dropdown.Item>
-                <Dropdown.Item
-                  className={styles.semi}
-                  eventKey="NIP-user_nip ASC"
-                >
-                  NIP
-                </Dropdown.Item>
-              </DropdownButton>
-            </Col>
-            <Col lg={3}>
-              <Form className={styles.searchInput}>
-                <Form.Group>
-                  <Form.Control
-                    type="text"
-                    placeholder="Search ..."
-                    name="search"
-                    onChange={(event) => this.changeText(event)}
-                  />
-                </Form.Group>
-              </Form>
-            </Col>
-          </Row>
+            </Col>}
           {this.props.datadiri.user_role === "admin" ?
             <Row>
               <Col md={10}>
@@ -281,6 +392,9 @@ class Home extends Component {
               </Col>
             </Row>
             : ""}
+          {/* <Image src={`http://192.168.50.23/backend1/api/2022-08-08T09-31-56.797Zmarikitacoba.jpg`}></Image> */}
+          {/* <Image src={ }></Image> */}
+
           <div className="mt-5">
             <Table striped bordered hover>
               <thead>
@@ -288,14 +402,17 @@ class Home extends Component {
                   <th className="text-center">No</th>
                   <th className="text-center">Nama Lengkap</th>
                   <th className="text-center">NIP</th>
-                  <th className="text-center">Tanggal</th>
+                  <th className="text-center">Pangkat / Golongan</th>
+                  <th className="text-center">No HP</th>
                   <th className="text-center">Aktivitas</th>
+                  <th className="text-center">Tanggal</th>
+                  <th className="text-center">BUkti Aktivitas</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
               {this.props.datadiri.user_role === "admin" ?
                 this.props.dataLaporanAktivitasAll.map((item, index) => {
-                  console.log(item.logaktivitas_id);
+                  console.log(item);
                   return (
                     <tbody>
                       <tr key={index}>
@@ -309,10 +426,20 @@ class Home extends Component {
                           {item.user_nip}
                         </td>
                         <td>
-                          {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
+                          {item.user_pangkat}
+                        </td>
+                        <td>
+                          {item.user_phone_number}
                         </td>
                         <td>
                           {item.logaktivitas_isi}
+                        </td>
+                        <td>
+                          {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
+                        </td>
+                        <td>
+                          <p>An absolute URL: <a href={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">W3Schools</a></p>
+                          {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
                         </td>
                         <td>
                           <Row>
@@ -326,7 +453,9 @@ class Home extends Component {
                             <Col>
                               <Button
                                 variant="danger"
-                                onClick={() => this.deleteDataLaporanAktivitas(item.logaktivitas_id)}>
+                                // onClick={() => this.deleteDataLaporanAktivitas(item.logaktivitas_id)}
+                                onClick={() => this.handleOpenVierifDelete(item.logaktivitas_id)}
+                              >
                                 Hapus
                               </Button>
                             </Col>
@@ -337,7 +466,7 @@ class Home extends Component {
                   )
                 })
                 : this.props.dataLaporanAktivitasByIdUser.map((item, index) => {
-                  console.log(item.logaktivitas_id);
+                  console.log(item.logaktivitas_image);
                   return (
                     <tbody>
                       <tr key={index}>
@@ -351,10 +480,22 @@ class Home extends Component {
                           {item.user_nip}
                         </td>
                         <td>
-                          {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
+                          {item.user_pangkat}
+                        </td>
+                        <td>
+                          {item.user_phone_number}
                         </td>
                         <td>
                           {item.logaktivitas_isi}
+                        </td>
+                        <td>
+                          {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
+                        </td>
+                        <td>
+                          {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
+
+                          <p> <a href={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Klik disini</a></p>
+                          {/* <object width="100%" height="400" data={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} > </object> */}
                         </td>
                         <td>
                           <Row>
@@ -362,13 +503,16 @@ class Home extends Component {
                               <Button
                                 variant="warning"
                                 onClick={() => this.handleEdit(item.logaktivitas_id)}>
-                                editt
+                                edit
                               </Button>
                             </Col>
+                          </Row>
+                          <Row>
                             <Col>
                               <Button
                                 variant="danger"
-                                onClick={() => this.deleteDataLaporanAktivitas(item.logaktivitas_id)}>
+                                onClick={() => this.handleOpenVierifDelete(item.logaktivitas_id)}
+                              >
                                 Hapus
                               </Button>
                             </Col>
@@ -382,23 +526,41 @@ class Home extends Component {
           </div>
         </Container>
 
-        <Container >
-          <div className="d-flex justify-content-center">
-            <ReactPaginate
-              previousLabel={"prev"}
-              nextLabel={"next"}
-              breakLabel={"..."}
-              breakClassName={"break-me"}
-              pageCount={pagination.totalPage ? pagination.totalPage : 0}
-              marginPagesDisplayed={2}
-              pageRangeDisplayed={2}
-              onPageChange={this.handlePageClick2}
-              containerClassName={styles.pagination}
-              subContainerClassName={`${styles.pages} ${styles.pagination}`}
-              activeClassName={styles.active}
-            />
-          </div>
-        </Container>
+        {this.props.datadiri.user_role === "admin" ?
+          <Container >
+            <div className="d-flex justify-content-center">
+              <ReactPaginate
+                previousLabel={"prev"}
+                nextLabel={"next"}
+                breakLabel={"..."}
+                breakClassName={"break-me"}
+                pageCount={pagination.totalPage ? pagination.totalPage : 0}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={2}
+                onPageChange={this.handlePageClick2}
+                containerClassName={styles.pagination}
+                subContainerClassName={`${styles.pages} ${styles.pagination}`}
+                activeClassName={styles.active}
+              />
+            </div>
+          </Container> :
+          <Container >
+            <div className="d-flex justify-content-center">
+              <ReactPaginate
+                previousLabel={"prev"}
+                nextLabel={"next"}
+                breakLabel={"..."}
+                breakClassName={"break-me"}
+                pageCount={paginationByUserId.totalPage ? paginationByUserId.totalPage : 0}
+                marginPagesDisplayed={2}
+                pageRangeDisplayed={2}
+                onPageChange={this.handlePageClick2}
+                containerClassName={styles.pagination}
+                subContainerClassName={`${styles.pages} ${styles.pagination}`}
+                activeClassName={styles.active}
+              />
+            </div>
+          </Container>}
         <Footer />
         {/* modal input aktivitas */}
         <Modal size="lg" show={modalHandleEdit} onHide={this.handleClose}>
@@ -443,6 +605,11 @@ class Home extends Component {
                       onChange={(event) => this.changeTextForm(event)}
                     />
                   </Form.Group>
+                  <Form.File
+                    className={"mt-3"}
+                    label="Upload Bukti Aktivtias"
+                    onChange={(event) => this.handleImage(event)}
+                  />
                 </Form>
               )
             })}
@@ -468,6 +635,28 @@ class Home extends Component {
           </Modal.Body>
         </Modal>
         {/* akhir modal notif */}
+
+        {/* modal Verif delete */}
+        <Modal size="sm" show={showVerifDelete} onHide={this.handleCloseVierifDelete} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Yakin dihapus ?</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <Button
+                  onClick={() => this.deleteDataLaporanAktivitas(idDelete)}
+                >Yakin</Button>
+              </Col>
+              <Col>
+                <Button
+                  onClick={() => this.handleCloseVierifDelete()}
+                >Tidak</Button>
+              </Col>
+            </Row>
+          </Modal.Body>
+        </Modal>
+        {/* akhir modal Verif delete */}
       </>
     );
   }
@@ -479,6 +668,7 @@ const mapStateToProps = (state) => ({
   datadiri: state.auth.data,
   dataLaporanAktivitasById: state.laporanAktivitas.dataLaporanById,
   dataLaporanAktivitasAll: state.laporanAktivitas.dataLaporanAll,
+  dataLaporanAktivitasAlltest: state.laporanAktivitas,
   dataLaporanAktivitasByIdUser: state.laporanAktivitas.dataLaporanByIdUser
 });
 

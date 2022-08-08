@@ -2,7 +2,7 @@ import axios from "axios";
 require("dotenv").config();
 
 const axiosApiIntances = axios.create({
-  baseURL: "http://localhost:3001/backend1/api/v1/",
+  baseURL: "http://192.168.50.23/backend1/api/v1/",
 });
 
 // Add a request interceptor
@@ -34,7 +34,7 @@ axiosApiIntances.interceptors.response.use(
     if (error.response.status === 403) {
       localStorage.clear();
       alert("Please log in with a verified account !");
-      window.location.href = "/bookingruangrapat/login";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

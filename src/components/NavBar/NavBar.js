@@ -61,7 +61,7 @@ class NavBar extends Component {
   };
 
   handleLogin = () => {
-    this.props.history.push("/bookingruangrapat/login");
+    this.props.history.push("/login");
   };
 
   handleLogout = () => {

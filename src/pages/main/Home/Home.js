@@ -4,7 +4,6 @@ import { Button, Container, Form, Modal } from "react-bootstrap";
 import { connect } from "react-redux";
 import Footer from "../../../components/Footer/Footer";
 
-
 import moment from "moment";
 import { postLaporanAktivitas } from "../../../redux/action/laporanAktivitas"
 
@@ -17,7 +16,9 @@ class Home extends Component {
       form: {
         NIP: this.props.dataUserById.user_nip,
         namaLengkap: this.props.dataUserById.id,
-        isiAktivitas: ""
+        isiAktivitas: "",
+        movieImage: null,
+        image: null,
       },
       show: false,
       showNotif: false,
@@ -132,14 +133,37 @@ class Home extends Component {
     // });
   };
 
+  handleImage = (event) => {
+    console.log(event.target.files);
+    if (event.target.files[0]) {
+      this.setState({
+        form: {
+          ...this.state.form,
+          movieImage: URL.createObjectURL(event.target.files[0]),
+          image: event.target.files[0],
+        },
+      });
+    } else {
+      this.setState({
+        form: {
+          ...this.state.form,
+          movieImage: null,
+          image: null,
+        },
+      });
+    }
+  };
+
   render() {
 
     console.log(this.state);
     console.log(this.props);
+
     const { show, showNotif, modalMsg }
       = this.state
-    const { isiAktivitas }
+    const { isiAktivitas, movieImage, image }
       = this.state.form
+    console.log('image coba', image);
     return (
       <>
 
@@ -185,21 +209,21 @@ class Home extends Component {
                   placeholder={this.props.dataUserById.user_name}
                 />
 
-                <Form.Label>NIP</Form.Label>
+                <Form.Label className={"mt-3"}>NIP</Form.Label>
                 <Form.Control
                   disabled
                   type="text"
                   placeholder={this.props.dataUserById.user_nip}
                 />
 
-                <Form.Label>Tanggal</Form.Label>
+                <Form.Label className={"mt-3"}>Tanggal</Form.Label>
                 <Form.Control
                   readOnly
                   type="text"
                   placeholder={moment().format('DD-MMM-YYYY')}
                 />
 
-                <Form.Label>Aktivitas</Form.Label>
+                <Form.Label className={"mt-3"}>Aktivitas</Form.Label>
                 <Form.Control
                   // type="textarea"
                   as="textarea" rows={5}
@@ -207,6 +231,12 @@ class Home extends Component {
                   name="isiAktivitas"
                   value={isiAktivitas}
                   onChange={(event) => this.changeTextForm(event)}
+                />
+
+                <Form.File
+                  className={"mt-3"}
+                  label="Upload Bukti Aktivtias"
+                  onChange={(event) => this.handleImage(event)}
                 />
               </Form.Group>
             </Form>

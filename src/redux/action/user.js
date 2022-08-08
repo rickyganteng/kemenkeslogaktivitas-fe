@@ -14,10 +14,10 @@ export const getOrderHistory = (id) => {
   };
 };
 
-export const getUserAllTanpaFill = () => {
+export const getUserAllTanpaFill = (page, limit, sortBy, sortCol, search) => {
   return {
     type: "GET_ALL_USER_TANPAFILL",
-    payload: axiosApiIntances.get("user/tanpafill/q"),
+    payload: axiosApiIntances.get(`user/tanpafill/q?page=${page}&limit=${limit}&keywords=${search}&sort=${sortBy}&sortCol=${sortCol}`),
   };
 };
 

@@ -7,7 +7,8 @@ const initialState = {
   dataUserById: [],
   dataBookingById: [],
   dataWaitingById: [],
-  dataLaporanById: []
+  dataLaporanById: [],
+  pagination: []
 };
 
 const update = (state = initialState, action) => {
@@ -61,6 +62,7 @@ const update = (state = initialState, action) => {
         isError: false,
         msg: action.payload.data.msg,
         dataUser: action.payload.data.data,
+        pagination: action.payload.data.pagination
         // pag: action.payload.data.pagination
       };
     case "GET_ALL_USER_TANPAFILL_REJECTED":
@@ -69,7 +71,9 @@ const update = (state = initialState, action) => {
         isLoading: false,
         isError: true,
         msg: action.payload.message,
-        dataUser: []
+        dataUser: [],
+        pagination: []
+
       };
     case "GET_BY_ID_USER_PENDING":
       return {
