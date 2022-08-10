@@ -8,8 +8,8 @@ class Footer extends Component {
   render() {
     return (
       <>
-        <footer className="mt-5">
-          <Container fluid>
+        <footer >
+          <Container fluid >
             <Row>
               <Col sm={4}>
                 <p className={styles.bold}>

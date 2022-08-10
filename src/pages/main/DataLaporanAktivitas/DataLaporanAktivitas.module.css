@@ -230,3 +230,12 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #5f2eea;
 }
+
+.backgroundtext{
+  background-color: #ff9900;
+}
+
+.searchInput{
+  padding: 0px 0px 0px 0px;
+  margin-right: 10px;
+}

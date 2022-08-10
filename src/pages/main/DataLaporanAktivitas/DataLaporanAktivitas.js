@@ -220,9 +220,9 @@ class Home extends Component {
   handleExport = () => {
     console.log(this.props.dataLaporanAktivitasAll);
     var wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(this.props.dataLaporanAktivitasAll);
+      ws = XLSX.utils.json_to_sheet(this.props.hehe.laporanAktivitas.pagination.totalDataNoLimit);
     XLSX.utils.book_append_sheet(wb, ws, "MySheet1");
-    XLSX.writeFile(wb, "MyExcel.xlsx")
+    XLSX.writeFile(wb, "Laporan Aktivitas.xlsx")
   }
 
   handlePageClick2 = (event) => {
@@ -310,10 +310,10 @@ class Home extends Component {
                 </Col>
                 <Col lg={2}>
                   <DropdownButton
-                    className={`${styles.dropDown} mb-2 text-right`}
+                    className={`${styles.dropDown} mb-2 text-center`}
                     variant="secondary"
                     title={dropDownVal}
-                    id="dropdown-menu-align-right"
+                    id="dropdown-item-button"
                     onSelect={this.handleSelect}
                   >
                     <Dropdown.Item
@@ -339,7 +339,7 @@ class Home extends Component {
                 {dropDownVal === "tanggal" ?
                   <div className="d-flex justify-content-around">
                     <Row>
-                      <Col md={6} >
+                      <Col >
                         <Form className={styles.searchInput}>
                           <Form.Group>
                             <Form.Control
@@ -351,8 +351,8 @@ class Home extends Component {
                           </Form.Group>
                         </Form>
                       </Col>
-                      <Col md={6} >
-                        <Form className={styles.searchInput}>
+                      <Col className={styles.searchInput}>
+                        <Form >
                           <Form.Group>
                             <Form.Control
                               type="date"
@@ -363,6 +363,7 @@ class Home extends Component {
                           </Form.Group>
                         </Form>
                       </Col>
+                      <Col>heheh</Col>
                     </Row>
                   </div> :
                   <Col lg={3}>
@@ -432,13 +433,13 @@ class Home extends Component {
                           {item.user_phone_number}
                         </td>
                         <td>
-                          {item.logaktivitas_isi}
+                          {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
                         </td>
                         <td>
-                          {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
+                          {moment(item.logaktivitas_created_at).format('ddd, DD-MMM-YYYY')}
                         </td>
                         <td>
-                          <p>An absolute URL: <a href={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">W3Schools</a></p>
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
                         </td>
                         <td>
@@ -486,15 +487,14 @@ class Home extends Component {
                           {item.user_phone_number}
                         </td>
                         <td>
-                          {item.logaktivitas_isi}
+                          {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
                         </td>
                         <td>
                           {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
                         </td>
                         <td>
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
-
-                          <p> <a href={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Klik disini</a></p>
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} > </object> */}
                         </td>
                         <td>
@@ -503,7 +503,7 @@ class Home extends Component {
                               <Button
                                 variant="warning"
                                 onClick={() => this.handleEdit(item.logaktivitas_id)}>
-                                edit
+                                edit user
                               </Button>
                             </Col>
                           </Row>

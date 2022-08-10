@@ -176,11 +176,10 @@ class Home extends Component {
   };
 
   handleExport = () => {
-
     var wb = XLSX.utils.book_new(),
-      ws = XLSX.utils.json_to_sheet(this.props.dataLaporanToday);
+      ws = XLSX.utils.json_to_sheet(this.props.hehe.laporanAktivitas.paginationLaporanToday.resultTodayNoLimit);
     XLSX.utils.book_append_sheet(wb, ws, "MySheet1");
-    XLSX.writeFile(wb, "MyExcel.xlsx")
+    XLSX.writeFile(wb, `Laporan Aktivitas ${moment().format("DD-MMM-YYYY")}.xlsx`)
   }
 
   handleSelect = (event) => {
@@ -215,7 +214,7 @@ class Home extends Component {
   };
   // getDataMovieUpcoming = (id) => {
   //   axiosApiIntances
-  //     .get(`laporanaktivitas/${id}`)
+  //     .get(`laporanaktivitas / ${ id }`)
   //     .then((res) => {
   //       this.setState({
   //         dataMovUpcoming: res.data.data,
@@ -234,9 +233,9 @@ class Home extends Component {
     console.log(this.props.dataLaporanAktivitasById);
     const { paginationLaporanToday } = this.props.hehe.laporanAktivitas
     // // isiAktivitas = this.props.dataLaporanAktivitasById[0].logaktivitas_isi
-    // console.log(isiAktivitas);
+    console.log(paginationLaporanToday);
 
-    console.log(this.props.hehe.laporanAktivitas.paginationLaporanToday);
+    // console.log(this.props.hehe.laporanAktivitas.paginationLaporanToday);
 
     return (
       <>
@@ -249,7 +248,7 @@ class Home extends Component {
             </Col>
             <Col lg={2}>
               <DropdownButton
-                className={`${styles.dropDown} mb-2 text-right`}
+                className={`${styles.dropDown} mb - 2 text - right`}
                 variant="secondary"
                 title={dropDownVal}
                 id="dropdown-menu-align-right"
@@ -301,11 +300,12 @@ class Home extends Component {
                   <th className="text-center">Nama Lengkap</th>
                   <th className="text-center">NIP</th>
                   <th className="text-center">Pangkat / Golongan</th>
+                  <th className="text-center">Bukti Aktivitas</th>
                   <th className="text-center">Aktivitas</th>
                 </tr>
               </thead>
               {this.props.dataLaporanToday.map((item, index) => {
-                console.log(item.logaktivitas_id);
+                console.log(item.logaktivitas_image);
                 return (
                   <tbody>
                     <tr key={index}>
@@ -322,15 +322,20 @@ class Home extends Component {
                         {item.user_pangkat}
                       </td>
                       <td>
-                        {item.logaktivitas_isi === "Belum mengisi data hari ini" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
+                        {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text - center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+
+                      </td >
+                      <td>
+                        {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
                       </td>
-                    </tr>
-                  </tbody>
+                    </tr >
+                  </tbody >
                 )
-              })}
-            </Table>
-          </div>
-        </Container>
+              })
+              }
+            </Table >
+          </div >
+        </Container >
         <Container >
           <div className="d-flex justify-content-center">
             <ReactPaginate

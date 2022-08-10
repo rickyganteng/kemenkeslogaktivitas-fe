@@ -161,7 +161,7 @@ class Home extends Component {
 
     const { show, showNotif, modalMsg }
       = this.state
-    const { isiAktivitas, movieImage, image }
+    const { isiAktivitas, image }
       = this.state.form
     console.log('image coba', image);
     return (
@@ -169,12 +169,13 @@ class Home extends Component {
 
         <NavBar isAdminPage={false} />
         <Container className="mt-5">
-          <h1>Selamat Datang, {this.props.dataUserById.user_name}</h1>
+          <h2 className="text-center mb-5">Silahkan melakukan Input Aktivitas kegiatan kerja harian anda</h2>
           {this.props.dataUserById.user_role === "basic" ?
-            <Button onClick={() => this.setHandleshow()}>Input data Aktivitas</Button>
+            <div className="text-center mb-5"> <Button onClick={() => this.setHandleshow()} >Input data Aktivitas</Button></div>
             : ""}
         </Container>
-        <Footer />
+
+        <div className="mt-5"><Footer /></div>
 
         {/* <Container >
           <div className="d-flex justify-content-center">
