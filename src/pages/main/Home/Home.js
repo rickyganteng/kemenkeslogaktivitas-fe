@@ -158,7 +158,7 @@ class Home extends Component {
 
     console.log(this.state);
     console.log(this.props);
-
+    console.log(this.props.dataUserById.user_name);
     const { show, showNotif, modalMsg }
       = this.state
     const { isiAktivitas, image }
@@ -169,10 +169,13 @@ class Home extends Component {
 
         <NavBar isAdminPage={false} />
         <Container className="mt-5">
-          <h2 className="text-center mb-5">Silahkan melakukan Input Aktivitas kegiatan kerja harian anda</h2>
           {this.props.dataUserById.user_role === "basic" ?
-            <div className="text-center mb-5"> <Button onClick={() => this.setHandleshow()} >Input data Aktivitas</Button></div>
-            : ""}
+            <div>
+              <h2 className="text-center mb-5">Silahkan melakukan Input Aktivitas kegiatan kerja harian anda</h2>
+              <div className="text-center mb-5"> <Button onClick={() => this.setHandleshow()} >Input data Aktivitas</Button></div>
+            </div>
+            : <h2 className=" mb-5">Selamat Datang admin {this.props.dataUserById.user_name}</h2>
+          }
         </Container>
 
         <div className="mt-5"><Footer /></div>

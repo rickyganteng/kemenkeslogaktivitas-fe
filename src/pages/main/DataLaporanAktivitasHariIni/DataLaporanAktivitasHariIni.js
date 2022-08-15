@@ -293,15 +293,15 @@ class Home extends Component {
             </Row>
             : ""}
           < div className="mt-5" >
-            <Table striped bordered hover>
+            <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th className="text-center">No</th>
                   <th className="text-center">Nama Lengkap</th>
                   <th className="text-center">NIP</th>
                   <th className="text-center">Pangkat / Golongan</th>
-                  <th className="text-center">Bukti Aktivitas</th>
                   <th className="text-center">Aktivitas</th>
+                  <th className="text-center">Bukti Aktivitas</th>
                 </tr>
               </thead>
               {this.props.dataLaporanToday.map((item, index) => {
@@ -322,11 +322,10 @@ class Home extends Component {
                         {item.user_pangkat}
                       </td>
                       <td>
-                        {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text - center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
-
+                        {item.logaktivitas_isi === "--" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
                       </td >
                       <td>
-                        {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
+                        {item.logaktivitas_image === null ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                       </td>
                     </tr >
                   </tbody >

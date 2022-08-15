@@ -28,6 +28,8 @@ class Home extends Component {
       search: "",
       FromDate: "",
       ToDate: "",
+      valueCheckBox: false,
+
       form: {
         isiAktivitas: "",
         movieImage: null,
@@ -60,12 +62,13 @@ class Home extends Component {
       prevState.sortCol !== this.state.sortCol ||
       prevState.page !== this.state.page
     ) {
-      this.state.dropDownVal === "tanggal" ?
+      this.state.dropDownVal !== "Sort By" ?
+        this.props.history.push(
+          `/laporanaktivitas?fromdate=${this.state.FromDate}&todate=${this.state.ToDate}&search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
+        )
+        :
         this.props.history.push(
           `/laporanaktivitas?fromdate=${this.state.FromDate}&todate=${this.state.ToDate}`
-        ) :
-        this.props.history.push(
-          `/laporanaktivitas?search=${this.state.search}&sortby=${this.state.sortBy}&page=${this.state.page}&sortcol=${this.state.sortCol}`
         )
     }
   }
@@ -116,12 +119,32 @@ class Home extends Component {
   };
 
   changeText = (event) => {
+    event.persist();
     console.log('target naem', event.target.name);
-    console.log('target naem', event.target.value);
+    console.log('target value', event.target.value);
+    // this.setState({
+    //   search: event.target.value
+    // })
     if (event.target.name === 'search') {
       this.setState({ [event.target.name]: "%" + event.target.value + "%" });
     } else {
       this.setState({ [event.target.name]: event.target.value });
+    }
+  };
+
+  handleCheckBox = (event) => {
+    event.persist();
+    this.setState({
+      valueCheckBox: !this.state.valueCheckBox
+    })
+    if (this.state.valueCheckBox === false) {
+      this.setState({
+        search: "--"
+      })
+    } else if (this.state.valueCheckBox === true) {
+      this.setState({
+        search: ""
+      })
     }
   };
 
@@ -205,15 +228,14 @@ class Home extends Component {
   };
 
   handleSelect = (event) => {
+    console.log('event nih', event);
     console.log(event.split("-")[1]);
     console.log(event.split("-")[2]);
     this.setState({
       dropDownVal: event.split("-")[0],
       sortBy: event.split("-")[2],
       sortCol: event.split("-")[1],
-      search: "",
-      FromDate: "",
-      ToDate: ""
+      search: ""
     });
   };
 
@@ -284,13 +306,16 @@ class Home extends Component {
 
   render() {
 
-    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete } = this.state
+    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete, valueCheckBox } = this.state
     let { isiAktivitas } = this.state.form
     const { pagination } = this.props.hehe.laporanAktivitas
     const { paginationByUserId } = this.props.hehe.laporanAktivitas
     console.log(paginationByUserId);
     console.log(pagination);
-    console.log(this.props.dataLaporanAktivitasAlltest);
+    console.log(dropDownVal);
+    console.log('value yahhh', valueCheckBox);
+    console.log('value yahhh', this.props.hehe.laporanAktivitas.pagination.totalDataNoLimit);
+    console.log('value yahhh', this.props.hehe.dataLaporanAktivitasById);
 
     // // isiAktivitas = this.props.dataLaporanAktivitasById[0].logaktivitas_isi
     // console.log(isiAktivitas);
@@ -308,6 +333,34 @@ class Home extends Component {
                   <h1>Data Laporan</h1>
 
                 </Col>
+                <Col>
+                  <Row>
+                    <Col >
+                      <Form className={styles.searchInput}>
+                        <Form.Group>
+                          <Form.Control
+                            type="date"
+                            placeholder="Search ..."
+                            name="FromDate"
+                            onChange={(event) => this.changeText(event)}
+                          />
+                        </Form.Group>
+                      </Form>
+                    </Col>
+                    <Col className={styles.searchInput}>
+                      <Form >
+                        <Form.Group>
+                          <Form.Control
+                            type="date"
+                            placeholder="Search ..."
+                            name="ToDate"
+                            onChange={(event) => this.changeText(event)}
+                          />
+                        </Form.Group>
+                      </Form>
+                    </Col>
+                  </Row>
+                </Col>
                 <Col lg={2}>
                   <DropdownButton
                     className={`${styles.dropDown} mb-2 text-center`}
@@ -318,54 +371,26 @@ class Home extends Component {
                   >
                     <Dropdown.Item
                       className={styles.semi}
-                      eventKey="Nama Lengkap-user_name-logaktivitas_created_at DESC"
+                      eventKey="Nama Lengkap-u.user_name-logaktivitas_created_at DESC"
                     >
                       Nama Lengkap
                     </Dropdown.Item>
                     <Dropdown.Item
                       className={styles.semi}
-                      eventKey="NIP-user_nip-logaktivitas_created_at DESC"
+                      eventKey="NIP-u.user_nip-logaktivitas_created_at DESC"
                     >
                       NIP
                     </Dropdown.Item>
                     <Dropdown.Item
                       className={styles.semi}
-                      eventKey="tanggal-user_name-logaktivitas_created_at DESC"
+                      eventKey="aktivitas-l.logaktivitas_isi-logaktivitas_created_at DESC"
                     >
-                      Tanggal
+                      Aktivitas
                     </Dropdown.Item>
                   </DropdownButton>
                 </Col>
-                {dropDownVal === "tanggal" ?
-                  <div className="d-flex justify-content-around">
-                    <Row>
-                      <Col >
-                        <Form className={styles.searchInput}>
-                          <Form.Group>
-                            <Form.Control
-                              type="date"
-                              placeholder="Search ..."
-                              name="FromDate"
-                              onChange={(event) => this.changeText(event)}
-                            />
-                          </Form.Group>
-                        </Form>
-                      </Col>
-                      <Col className={styles.searchInput}>
-                        <Form >
-                          <Form.Group>
-                            <Form.Control
-                              type="date"
-                              placeholder="Search ..."
-                              name="ToDate"
-                              onChange={(event) => this.changeText(event)}
-                            />
-                          </Form.Group>
-                        </Form>
-                      </Col>
-                      <Col>heheh</Col>
-                    </Row>
-                  </div> :
+
+                {dropDownVal !== "aktivitas" ?
                   <Col lg={3}>
                     <Form className={styles.searchInput}>
                       <Form.Group>
@@ -377,7 +402,20 @@ class Home extends Component {
                         />
                       </Form.Group>
                     </Form>
-                  </Col>}
+                  </Col>
+                  :
+                  <div className="mb-3">
+                    <Form.Check
+                      inline
+                      type="checkbox"
+                      label="Belum Input"
+                      name="search"
+                      id={`default-checkbox-2`}
+                      onChange={(event) => this.handleCheckBox(event)}
+                      value="--"
+                    />
+                  </div>
+                }
               </Row>
             </div>
             : <Col>
@@ -397,7 +435,7 @@ class Home extends Component {
           {/* <Image src={ }></Image> */}
 
           <div className="mt-5">
-            <Table striped bordered hover>
+            <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th className="text-center">No</th>
@@ -433,13 +471,13 @@ class Home extends Component {
                           {item.user_phone_number}
                         </td>
                         <td>
-                          {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
+                          {item.logaktivitas_isi === "--" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
                         </td>
                         <td>
                           {moment(item.logaktivitas_created_at).format('ddd, DD-MMM-YYYY')}
                         </td>
                         <td>
-                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
                         </td>
                         <td>
@@ -487,14 +525,14 @@ class Home extends Component {
                           {item.user_phone_number}
                         </td>
                         <td>
-                          {item.logaktivitas_isi === "" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
+                          {item.logaktivitas_isi === "--" ? <p className={`${styles.backgroundtext} text-center`}>belum input</p> : item.logaktivitas_isi}
                         </td>
                         <td>
                           {moment(item.logaktivitas_created_at).format('DD-MMM-YYYY')}
                         </td>
                         <td>
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
-                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} > </object> */}
                         </td>
                         <td>
@@ -503,7 +541,7 @@ class Home extends Component {
                               <Button
                                 variant="warning"
                                 onClick={() => this.handleEdit(item.logaktivitas_id)}>
-                                edit user
+                                edit
                               </Button>
                             </Col>
                           </Row>
@@ -588,7 +626,7 @@ class Home extends Component {
                       placeholder={item.user_nip}
                     />
 
-                    <Form.Label>Tanggals</Form.Label>
+                    <Form.Label>Tanggal</Form.Label>
                     <Form.Control
                       readOnly
                       type="text"

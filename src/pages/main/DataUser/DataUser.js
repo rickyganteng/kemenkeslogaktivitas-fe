@@ -327,7 +327,7 @@ class Home extends Component {
             </Col>
           </Row>
           <div className="mt-5">
-            <Table striped bordered hover>
+            <Table striped bordered hover responsive>
               <thead>
                 <tr>
                   <th className="text-center">No</th>
