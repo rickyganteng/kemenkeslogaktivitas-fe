@@ -267,8 +267,9 @@ class Home extends Component {
 
   render() {
 
-    console.log(this.props.pagination.pagination);
     const { pagination } = this.props.pagination
+    console.log(pagination);
+
     const { showEditUser, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete } = this.state
     const {
       userNama,
