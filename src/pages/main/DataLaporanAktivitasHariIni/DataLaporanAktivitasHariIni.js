@@ -325,7 +325,7 @@ class Home extends Component {
                         {item.logaktivitas_isi === "--" ? <p className={`${styles.backgroundtext} text-center`}>Belum mengisi Data Hari Ini</p> : <p className={'text-center'}>{item.logaktivitas_isi}</p>}
                       </td >
                       <td>
-                        {item.logaktivitas_image === null ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                        {item.logaktivitas_image === null ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://103.74.143.139:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                       </td>
                     </tr >
                   </tbody >

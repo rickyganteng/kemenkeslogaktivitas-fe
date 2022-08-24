@@ -477,7 +477,7 @@ class Home extends Component {
                           {moment(item.logaktivitas_created_at).format('ddd, DD-MMM-YYYY')}
                         </td>
                         <td>
-                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://103.74.143.139:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
                         </td>
                         <td>
@@ -532,7 +532,7 @@ class Home extends Component {
                         </td>
                         <td>
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
-                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://192.168.50.23:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://103.74.143.139:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://localhost:3001/backend1/api/${item.logaktivitas_image}`} > </object> */}
                         </td>
                         <td>

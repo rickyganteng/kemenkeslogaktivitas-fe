@@ -185,10 +185,10 @@ class Login extends Component {
 
                   <Form onSubmit={this.handleLogin} className="mt-5">
                     <Form.Group controlId="formBasicEmail">
-                      <Form.Label>User Name</Form.Label>
+                      <Form.Label>User Email</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter user name"
+                        placeholder="Enter user email"
                         name="userEmail"
                         value={userEmail}
                         onChange={(event) => this.changeText(event)}
