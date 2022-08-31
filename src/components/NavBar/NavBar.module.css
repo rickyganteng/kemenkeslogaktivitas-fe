@@ -8,6 +8,14 @@
   letter-spacing: 0.005em;
   color: #414141;
 }
+.linkNavDropDown {
+  font-family: "Mulish", sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 10px;
+  letter-spacing: 0.005em;
+  color: #000000;
+}
 #title {
   font-family: "Mulish", sans-serif;
   font-weight: 600;

@@ -250,7 +250,7 @@ class Home extends Component {
               Close
             </Button>
             <Button variant="primary" onClick={() => this.postData()}>
-              Save Changes
+              Save
             </Button>
           </Modal.Footer>
         </Modal>

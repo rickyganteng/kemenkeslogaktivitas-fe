@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import NavBar from "../../../components/NavBar/NavBar";
 import axiosApiIntances from "../../../utils/axios";
 import ReactPaginate from "react-paginate";
-import { Button, Container, Row, Col, Form, Modal, Table, Dropdown, DropdownButton } from "react-bootstrap";
+import { Button, Container, Row, Col, Form, Modal, Table, Dropdown, DropdownButton, InputGroup } from "react-bootstrap";
 import { connect } from "react-redux";
 import Footer from "../../../components/Footer/Footer";
 import styles from "./DataUser.module.css"
@@ -26,7 +26,9 @@ class Home extends Component {
       sortBy: "user_name ASC",
       search: "",
       idDelete: "",
+      showPassword: false,
       form: {
+        dropDownValRole: "Role by",
         userNama: "",
         userNIP: "",
         userPangkat: "",
@@ -83,16 +85,18 @@ class Home extends Component {
     axiosApiIntances
       .get(`user/${params}`)
       .then((res) => {
-        console.log(res);
+        console.log('handle edit', res);
         this.setState({
           form: {
+            dropDownValRole: res.data.data[0].user_role,
             userNama: res.data.data[0].user_name,
             userNIP: res.data.data[0].user_nip,
             userPangkat: res.data.data[0].user_pangkat,
             userUnitKerja: res.data.data[0].user_unit_kerja,
             usernoHP: res.data.data[0].user_phone_number,
             userEmail: res.data.data[0].user_email,
-            idUser: res.data.data[0].id
+            idUser: res.data.data[0].id,
+            userPasswordRegis: ""
           }
         });
       })
@@ -220,6 +224,26 @@ class Home extends Component {
       this.getData();
     });
   };
+  handleSelectRole = (event) => {
+    console.log('event role', event);
+    this.setState({
+      form: {
+        ...this.state.form,
+        dropDownValRole: event
+      }
+    })
+    // console.log(event.split("-")[1]);
+    // console.log(event.split("-")[2]);
+    // this.setState({
+    //   dropDownVal: event.split("-")[0],
+    //   sortBy: event.split("-")[2],
+    //   sortCol: event.split("-")[1],
+    //   search: "",
+    // });
+    // this.setState({ page: 1 }, () => {
+    //   this.getData();
+    // });
+  };
 
   changeText = (event) => {
     console.log('target naem', event.target.name);
@@ -238,6 +262,12 @@ class Home extends Component {
       this.getData();
     });
   };
+
+  handleShowPass = () => {
+    this.setState({
+      showPassword: !this.state.showPassword
+    })
+  }
   // handleEdit = () => {
   //   console.log('params');
   //   this.setState({
@@ -270,7 +300,7 @@ class Home extends Component {
     const { pagination } = this.props.pagination
     console.log(pagination);
 
-    const { showEditUser, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete } = this.state
+    const { showEditUser, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete, showPassword } = this.state
     const {
       userNama,
       userNIP,
@@ -279,9 +309,20 @@ class Home extends Component {
       usernoHP,
       userEmail,
       userPasswordRegis,
-      idUser
+      idUser,
+      dropDownValRole
     } = this.state.form
     console.log('id dele', idDelete);
+    console.log('id dropdown', dropDownValRole);
+    const iconSHowPass = <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+      <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+      <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+    </svg>
+
+    const iconHidePass = <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+      <path d="m10.79 12.912-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z" />
+      <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6-12-12 .708-.708 12 12-.708.708z" />
+    </svg>
     return (
       <>
 
@@ -368,7 +409,7 @@ class Home extends Component {
                             <Button
                               variant="warning"
                               onClick={() => this.handleEdit(item.id)}>
-                              edit
+                              Edit
                             </Button>
                           </Col>
                           <Col>
@@ -414,7 +455,7 @@ class Home extends Component {
         {/* modal register */}
         <Modal size="lg" show={showEditUser} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Input Aktivitas</Modal.Title>
+            <Modal.Title>Edit Aktivitas</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -486,14 +527,40 @@ class Home extends Component {
               </Form.Group>
               <Form.Group as={Row}>
                 <Col>
+                  <Form.Label>Role</Form.Label>
+                  <DropdownButton
+                    className={`${styles.dropDown} mb-3`}
+                    variant="secondary"
+                    title={dropDownValRole}
+                    id="dropdown-menu-align-right"
+                    onSelect={this.handleSelectRole}
+                  >
+                    <Dropdown.Item
+                      className={styles.semi}
+                      eventKey="basic"
+                    >
+                      basic
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className={styles.semi}
+                      eventKey="admin"
+                    >
+                      admin
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </Col>
+                <Col>
                   <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Password"
-                    name="userPasswordRegis"
-                    value={userPasswordRegis}
-                    onChange={(event) => this.changeTextForm(event)}
-                  />
+                  <InputGroup>
+                    <Form.Control
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      name="userPasswordRegis"
+                      value={userPasswordRegis}
+                      onChange={(event) => this.changeTextForm(event)}
+                    />
+                    <InputGroup.Text onClick={this.handleShowPass}>{showPassword ? iconSHowPass : iconHidePass}</InputGroup.Text>
+                  </InputGroup>
                 </Col>
               </Form.Group>
             </Form>
@@ -523,14 +590,15 @@ class Home extends Component {
         {/* modal Verif delete */}
         <Modal size="sm" show={showVerifDelete} onHide={this.handleCloseVierifDelete} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Yakin dihapus ?</Modal.Title>
+            <Modal.Title><h6>Apakah Anda yakin ingin menghapus file?</h6></Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <Col>
                 <Button
+                  variant="danger"
                   onClick={() => this.deletedUser(idDelete)}
-                >Yakin</Button>
+                >Iya</Button>
               </Col>
               <Col>
                 <Button

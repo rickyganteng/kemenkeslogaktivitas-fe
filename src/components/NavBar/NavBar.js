@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { withRouter } from "react-router-dom";
-import { Nav, Navbar, Button, Image } from "react-bootstrap";
+import { Nav, Navbar, Button, Image, NavDropdown } from "react-bootstrap";
 import logo from "../../assets/img/logokemenkes.png";
 import styles from "./NavBar.module.css";
 // import ReactPaginate from "react-paginate";
@@ -102,7 +102,7 @@ class NavBar extends Component {
               ) : (
                 ""
               )}
-              <Link className="ml-sm-5 mr-2" to="/laporanaktivitas">
+              {/* <Link className="ml-sm-5 mr-2" to="/laporanaktivitas">
                 <span className={styles.link}>LAPORAN AKTIVITAS</span>
               </Link>
               {data.user_role === "admin" ? (
@@ -111,8 +111,25 @@ class NavBar extends Component {
                 </Link>
               ) : (
                 ""
-              )}
-
+              )} */}
+              <div className="ml-sm-5 mr-2">
+                <NavDropdown className={styles.linkNavDropDown} title="LAPORAN">
+                  <NavDropdown.Item >
+                    {data.user_role === "admin" ? (
+                      <Link to="/laporanaktivitashariini">
+                        <span className={styles.link}>LAPORAN AKTIVITAS HARI INI</span>
+                      </Link>
+                    ) : (
+                      ""
+                    )}
+                  </NavDropdown.Item>
+                  <NavDropdown.Item >
+                    <Link to="/laporanaktivitas">
+                      <span className={styles.link}>LAPORAN AKTIVITAS</span>
+                    </Link>
+                  </NavDropdown.Item>
+                </NavDropdown>
+              </div>
             </Nav>
 
 

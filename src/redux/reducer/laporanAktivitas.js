@@ -172,6 +172,26 @@ const update = (state = initialState, action) => {
         isError: true,
         msg: action.payload.message,
       };
+    case "DELETE_LAPORAN_AKTIVITAS_ALL_PENDING":
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case "DELETE_LAPORAN_AKTIVITAS_ALL_FULFILLED":
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        msg: action.payload.data.msg,
+      };
+    case "DELETE_LAPORAN_AKTIVITAS_ALL_REJECTED":
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+        msg: action.payload.message,
+      };
     default:
       return state;
   }

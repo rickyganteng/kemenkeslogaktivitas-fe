@@ -199,17 +199,21 @@ class Login extends Component {
                     </Form.Group>
                     <Form.Group controlId="formBasicPassword">
                       <Form.Label>Password</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Password"
-                        name="userPassword"
-                        value={userPassword}
-                        onChange={(event) => this.changeText(event)}
-                      />
-                      <Form.Control.Feedback type={passwordValid}>
-                        <p className={styles.warning}>{msg}</p>
-                      </Form.Control.Feedback>
+                      <InputGroup>
+                        <Form.Control
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Password"
+                          name="userPassword"
+                          value={userPassword}
+                          onChange={(event) => this.changeText(event)}
+                        />
+                        <Form.Control.Feedback type={passwordValid}>
+                          <p className={styles.warning}>{msg}</p>
+                        </Form.Control.Feedback>
+                        <InputGroup.Text onClick={this.handleShowPass}>{showPassword ? iconSHowPass : iconHidePass}</InputGroup.Text>
+                      </InputGroup>
                     </Form.Group>
+
                     <Button
                       variant="primary"
                       type="submit"
@@ -325,7 +329,7 @@ class Login extends Component {
               Close
             </Button>
             <Button variant="primary" onClick={() => this.postData()}>
-              Save Changes
+              Save
             </Button>
           </Modal.Footer>
         </Modal>

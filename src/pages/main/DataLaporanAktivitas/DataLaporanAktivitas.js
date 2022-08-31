@@ -6,7 +6,7 @@ import { Button, Container, Row, Col, Form, Dropdown, DropdownButton, Modal, Tab
 import styles from "./DataLaporanAktivitas.module.css";
 import { connect } from "react-redux";
 
-import { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, getLaporanAktivitasByIdUser } from "../../../redux/action/laporanAktivitas"
+import { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, deleteLaporanAktivitasAll, getLaporanAktivitasByIdUser } from "../../../redux/action/laporanAktivitas"
 import moment from "moment";
 import * as XLSX from 'xlsx'
 import Footer from "../../../components/Footer/Footer";
@@ -18,6 +18,7 @@ class Home extends Component {
       modalHandleEdit: false,
       showNotif: false,
       showVerifDelete: false,
+      showVerifDeleteAll: false,
       idDelete: "",
       modalMsg: "",
       dropDownVal: "Sort By",
@@ -227,6 +228,37 @@ class Home extends Component {
       });
   };
 
+  deleteDataLaporanAktivitasAll = () => {
+    this.props
+      .deleteLaporanAktivitasAll()
+      .then((res) => {
+        this.setState(
+          {
+            modalMsg: "Data Laporan Aktivitas Deleted !",
+            showNotif: true,
+          },
+          () => {
+            this.getData();
+          }
+        );
+      })
+      .catch((err) => {
+        this.setState({
+          modalMsg: "Deleted Failed !",
+          show: true,
+        });
+      })
+      .finally(() => {
+        setTimeout(() => {
+          this.setState({
+            show: false,
+            showNotif: false,
+            showVerifDeleteAll: false
+          });
+        }, 1000);
+      });
+  };
+
   handleSelect = (event) => {
     console.log('event nih', event);
     console.log(event.split("-")[1]);
@@ -269,6 +301,20 @@ class Home extends Component {
       idDelete: ""
     })
   };
+  handleOpenVierifDeleteAll = () => {
+    console.log('id delete');
+    this.setState({
+      showVerifDeleteAll: true,
+      // idDelete: id
+    })
+  };
+
+  handleCloseVierifDeleteAll = () => {
+    this.setState({
+      showVerifDeleteAll: false,
+      idDelete: ""
+    })
+  };
 
   handleImage = (event) => {
     console.log(event.target.files);
@@ -306,7 +352,7 @@ class Home extends Component {
 
   render() {
 
-    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete, valueCheckBox } = this.state
+    const { modalHandleEdit, showNotif, modalMsg, dropDownVal, showVerifDelete, idDelete, valueCheckBox, showVerifDeleteAll } = this.state
     let { isiAktivitas } = this.state.form
     const { pagination } = this.props.hehe.laporanAktivitas
     const { paginationByUserId } = this.props.hehe.laporanAktivitas
@@ -424,10 +470,17 @@ class Home extends Component {
             </Col>}
           {this.props.datadiri.user_role === "admin" ?
             <Row>
-              <Col md={10}>
+              <Col sm={2}>
                 <Button
                   onClick={() => this.handleExport()}>
                   Export Data</Button>
+              </Col>
+
+              <Col sm={2}>
+                <Button
+                  variant="danger"
+                  onClick={() => this.handleOpenVierifDeleteAll()}>
+                  Hapus All Data</Button>
               </Col>
             </Row>
             : ""}
@@ -445,7 +498,7 @@ class Home extends Component {
                   <th className="text-center">No HP</th>
                   <th className="text-center">Aktivitas</th>
                   <th className="text-center">Tanggal</th>
-                  <th className="text-center">BUkti Aktivitas</th>
+                  <th className="text-center">Bukti Aktivitas</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
@@ -477,7 +530,7 @@ class Home extends Component {
                           {moment(item.logaktivitas_created_at).format('ddd, DD-MMM-YYYY')}
                         </td>
                         <td>
-                          {item.logaktivitas_image === "" ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://103.74.143.139:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
+                          {item.logaktivitas_image === null ? <p className={`${styles.backgroundtext} text-center`}> belum input </p> : <p> <a href={`http://103.74.143.139:3005/backend1/api/${item.logaktivitas_image}`} target="_blank" rel="noreferrer">Open File</a></p>}
                           {/* <object width="100%" height="400" data={`http://192.168.50.23/backend1/api/${item.logaktivitas_image}`} > hehe</object> */}
                         </td>
                         <td>
@@ -486,7 +539,7 @@ class Home extends Component {
                               <Button
                                 variant="warning"
                                 onClick={() => this.handleEdit(item.logaktivitas_id)}>
-                                editt
+                                Edit
                               </Button>
                             </Col>
                             <Col>
@@ -541,7 +594,7 @@ class Home extends Component {
                               <Button
                                 variant="warning"
                                 onClick={() => this.handleEdit(item.logaktivitas_id)}>
-                                edit
+                                Edit
                               </Button>
                             </Col>
                           </Row>
@@ -564,41 +617,43 @@ class Home extends Component {
           </div>
         </Container>
 
-        {this.props.datadiri.user_role === "admin" ?
-          <Container >
-            <div className="d-flex justify-content-center">
-              <ReactPaginate
-                previousLabel={"prev"}
-                nextLabel={"next"}
-                breakLabel={"..."}
-                breakClassName={"break-me"}
-                pageCount={pagination.totalPage ? pagination.totalPage : 0}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={2}
-                onPageChange={this.handlePageClick2}
-                containerClassName={styles.pagination}
-                subContainerClassName={`${styles.pages} ${styles.pagination}`}
-                activeClassName={styles.active}
-              />
-            </div>
-          </Container> :
-          <Container >
-            <div className="d-flex justify-content-center">
-              <ReactPaginate
-                previousLabel={"prev"}
-                nextLabel={"next"}
-                breakLabel={"..."}
-                breakClassName={"break-me"}
-                pageCount={paginationByUserId.totalPage ? paginationByUserId.totalPage : 0}
-                marginPagesDisplayed={2}
-                pageRangeDisplayed={2}
-                onPageChange={this.handlePageClick2}
-                containerClassName={styles.pagination}
-                subContainerClassName={`${styles.pages} ${styles.pagination}`}
-                activeClassName={styles.active}
-              />
-            </div>
-          </Container>}
+        {
+          this.props.datadiri.user_role === "admin" ?
+            <Container >
+              <div className="d-flex justify-content-center">
+                <ReactPaginate
+                  previousLabel={"prev"}
+                  nextLabel={"next"}
+                  breakLabel={"..."}
+                  breakClassName={"break-me"}
+                  pageCount={pagination.totalPage ? pagination.totalPage : 0}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={2}
+                  onPageChange={this.handlePageClick2}
+                  containerClassName={styles.pagination}
+                  subContainerClassName={`${styles.pages} ${styles.pagination}`}
+                  activeClassName={styles.active}
+                />
+              </div>
+            </Container> :
+            <Container >
+              <div className="d-flex justify-content-center">
+                <ReactPaginate
+                  previousLabel={"prev"}
+                  nextLabel={"next"}
+                  breakLabel={"..."}
+                  breakClassName={"break-me"}
+                  pageCount={paginationByUserId.totalPage ? paginationByUserId.totalPage : 0}
+                  marginPagesDisplayed={2}
+                  pageRangeDisplayed={2}
+                  onPageChange={this.handlePageClick2}
+                  containerClassName={styles.pagination}
+                  subContainerClassName={`${styles.pages} ${styles.pagination}`}
+                  activeClassName={styles.active}
+                />
+              </div>
+            </Container>
+        }
         <Footer />
         {/* modal input aktivitas */}
         <Modal size="lg" show={modalHandleEdit} onHide={this.handleClose}>
@@ -677,14 +732,15 @@ class Home extends Component {
         {/* modal Verif delete */}
         <Modal size="sm" show={showVerifDelete} onHide={this.handleCloseVierifDelete} centered>
           <Modal.Header closeButton>
-            <Modal.Title>Yakin dihapus ?</Modal.Title>
+            <Modal.Title><h6>Apakah Anda yakin ingin menghapus file?</h6></Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Row>
               <Col>
                 <Button
+                  variant="danger"
                   onClick={() => this.deleteDataLaporanAktivitas(idDelete)}
-                >Yakin</Button>
+                >Iya</Button>
               </Col>
               <Col>
                 <Button
@@ -695,11 +751,34 @@ class Home extends Component {
           </Modal.Body>
         </Modal>
         {/* akhir modal Verif delete */}
+
+        {/* modal Verif delete all */}
+        <Modal size="sm" show={showVerifDeleteAll} onHide={this.handleCloseVierifDeleteAll} centered>
+          <Modal.Header closeButton>
+            <Modal.Title><h6>Apakah Anda yakin ingin menghapus semua data file ?</h6></Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <Button
+                  variant="danger"
+                  onClick={() => this.deleteDataLaporanAktivitasAll()}
+                >Iya</Button>
+              </Col>
+              <Col>
+                <Button
+                  onClick={() => this.handleCloseVierifDeleteAll()}
+                >Tidak</Button>
+              </Col>
+            </Row>
+          </Modal.Body>
+        </Modal>
+        {/* akhir modal Verif delete all */}
       </>
     );
   }
 }
-const mapDispatchToProps = { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, getLaporanAktivitasByIdUser };
+const mapDispatchToProps = { getAllLaporanAktivitas, getByIdLaporanAktivitas, updateLaporanAktivitas, deleteLaporanAktivitas, deleteLaporanAktivitasAll, getLaporanAktivitasByIdUser };
 
 const mapStateToProps = (state) => ({
   hehe: state,

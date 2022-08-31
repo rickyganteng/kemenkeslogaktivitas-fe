@@ -54,3 +54,9 @@ export const deleteLaporanAktivitas = (id) => {
   };
 };
 
+export const deleteLaporanAktivitasAll = (id) => {
+  return {
+    type: "DELETE_LAPORAN_AKTIVITAS_ALL",
+    payload: axiosApiIntances.delete("laporanaktivitas"),
+  };
+};
